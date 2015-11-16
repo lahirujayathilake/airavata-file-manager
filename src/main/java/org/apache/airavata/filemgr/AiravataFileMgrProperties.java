@@ -32,7 +32,7 @@ public class AiravataFileMgrProperties {
     private static AiravataFileMgrProperties instance;
 
     private Properties properties = new Properties();
-    private static final String PROPERTY_FILE_NAME = "/file-mgr.properties";
+    private static final String PROPERTY_FILE_NAME = "/filemgr.properties";
 
     private AiravataFileMgrProperties(){
         InputStream inputStream = AiravataFileMgr.class.getResourceAsStream(PROPERTY_FILE_NAME);

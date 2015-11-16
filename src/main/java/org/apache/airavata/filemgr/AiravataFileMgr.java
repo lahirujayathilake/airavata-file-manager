@@ -49,8 +49,7 @@ public class AiravataFileMgr {
         SshServer sshd = SshServer.setUpDefaultServer();
         sshd.setPort(AiravataFileMgrProperties.getInstance().getServerPort());
 
-        sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(new File(AiravataFileMgr.class
-                .getResource("/hostkey.ser").getPath())));
+        sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(new File(this.getClass().getResource("/hostkey.ser").getPath())));
 
         sshd.setPasswordAuthenticator(new PasswordAuthenticator() {
             public boolean authenticate(String username, String password, ServerSession serverSession) {
