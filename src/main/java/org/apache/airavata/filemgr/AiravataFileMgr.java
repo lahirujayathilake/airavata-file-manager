@@ -52,12 +52,10 @@ public class AiravataFileMgr {
         sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(new File(this.getClass().getResource("/hostkey.ser").getPath())));
 
         sshd.setPasswordAuthenticator(new PasswordAuthenticator() {
-            public boolean authenticate(String username, String password, ServerSession serverSession) {
+            public boolean authenticate(String username, String accessToken, ServerSession serverSession) {
                 AuthenticationMgr authenticationMgr = new AuthenticationMgr();
                 try {
-                    AuthResponse authResponse = authenticationMgr.authenticate(username, password);
-                    if(authResponse != null)
-                        return true;
+                    return authenticationMgr.authenticate(username, accessToken);
                 } catch (AuthenticationException e) {
                     e.printStackTrace();
                 }

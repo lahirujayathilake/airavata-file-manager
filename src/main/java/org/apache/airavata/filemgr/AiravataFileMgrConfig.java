@@ -28,9 +28,6 @@ public class AiravataFileMgrConfig {
 
     public static final String SFTP_PORT = "sftp.port";
     public static final String IDP_URL = "idp.url";
-    public static final String IDP_TENANT_ID = "idp.tenant.id";
     public static final String IDP_AUTHORISED_ROLES = "idp.authorised.roles";
-    public static final String IDP_OAUTH_CLIENT_ID = "idp.oauth.client.id";
-    public static final String IDP_OAUTH_CLIENT_SECRET = "idp.oauth.client.secret";
     public static final String USER_DATA_ROOT = "user.data.root";
 }

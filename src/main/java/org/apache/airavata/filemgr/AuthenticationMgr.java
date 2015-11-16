@@ -25,14 +25,10 @@ import org.apache.oltu.oauth2.client.request.OAuthBearerClientRequest;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.client.response.OAuthResourceResponse;
 import org.apache.oltu.oauth2.common.OAuth;
-import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
-import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
-import org.apache.oltu.oauth2.common.message.types.GrantType;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class AuthenticationMgr {
@@ -40,53 +36,24 @@ public class AuthenticationMgr {
 
     String hostName = AiravataFileMgrProperties.getInstance().getIdpUrl();
     String[] allowedUserRoles = AiravataFileMgrProperties.getInstance().getAuthorisedUserRoles();
-    String clientId = AiravataFileMgrProperties.getInstance().getOAuthClientId();
-    String clientSecret = AiravataFileMgrProperties.getInstance().getOAuthClientSecret();
 
-    public AuthResponse authenticate(String username,String password) throws AuthenticationException {
+    public boolean authenticate(String username,String accessToken) throws AuthenticationException {
         try {
-            username = username + "@" + AiravataFileMgrProperties.getInstance().getIdpTenantId();
-
-            OAuthClientRequest request = OAuthClientRequest.tokenLocation(hostName+"/oauth2/token").
-                    setClientId(clientId).setClientSecret(clientSecret).
-                    setGrantType(GrantType.PASSWORD).
-                    setRedirectURI("").
-                    setUsername(username).
-                    setPassword(password).
-                    setScope("openid").
-                    buildBodyMessage();
-
-
-            URLConnectionClient ucc = new URLConnectionClient();
-
-            org.apache.oltu.oauth2.client.OAuthClient oAuthClient = new org.apache.oltu.oauth2.client.OAuthClient(ucc);
-            OAuthResourceResponse resp = oAuthClient.resource(request, OAuth.HttpMethod.POST, OAuthResourceResponse.class);
-
-            //converting JSON to object
-            ObjectMapper mapper = new ObjectMapper();
-            AuthResponse authResponse;
-            try{
-                authResponse = mapper.readValue(resp.getBody(), AuthResponse.class);
-            }catch (Exception e){
-                return null;
-            }
-
-            String accessToken = authResponse.getAccess_token();
             if(accessToken != null && !accessToken.isEmpty()){
-                request = new OAuthBearerClientRequest(hostName + "/oauth2/userinfo?schema=openid").
+                OAuthClientRequest request = new OAuthBearerClientRequest(hostName + "/oauth2/userinfo?schema=openid").
                         buildQueryMessage();
-                ucc = new URLConnectionClient();
+                URLConnectionClient ucc = new URLConnectionClient();
                 request.setHeader("Authorization","Bearer "+accessToken);
-                oAuthClient = new org.apache.oltu.oauth2.client.OAuthClient(ucc);
-                resp = oAuthClient.resource(request, OAuth.HttpMethod.GET,
+                org.apache.oltu.oauth2.client.OAuthClient oAuthClient = new org.apache.oltu.oauth2.client.OAuthClient(ucc);
+                OAuthResourceResponse resp = oAuthClient.resource(request, OAuth.HttpMethod.GET,
                         OAuthResourceResponse.class);
+                ObjectMapper mapper = new ObjectMapper();
                 Map<String,String> profile = mapper.readValue(resp.getBody(), Map.class);
                 String[] userRoles = profile.get("roles").split(",");
                 for(String userRole : userRoles){
                     for(String allowedRole : allowedUserRoles){
-                        if(allowedRole.equals(userRole)){
-                            logger.info("User Authenticated Successfully");
-                            return authResponse;
+                        if(username.equals(profile.get("sub")) &&  allowedRole.equals(userRole)){
+                            return true;
                         }
                     }
                 }
@@ -94,27 +61,6 @@ public class AuthenticationMgr {
         }catch (Exception ex){
             throw new AuthenticationException(ex);
         }
-        return null;
-    }
-
-    public AuthResponse getRefreshedOAuthToken(String refreshToken) throws OAuthSystemException, OAuthProblemException,
-            IOException {
-        OAuthClientRequest request = OAuthClientRequest.tokenLocation(hostName + "/oauth2/token").
-                setClientId(clientId).
-                setClientSecret(clientSecret).
-                setGrantType(GrantType.REFRESH_TOKEN).
-                setRefreshToken(refreshToken).
-                buildBodyMessage();
-
-        URLConnectionClient ucc = new URLConnectionClient();
-
-        org.apache.oltu.oauth2.client.OAuthClient oAuthClient = new org.apache.oltu.oauth2.client.OAuthClient(ucc);
-        OAuthResourceResponse resp = oAuthClient.resource(request, OAuth.HttpMethod.POST, OAuthResourceResponse.class);
-
-        //converting JSON to object
-        ObjectMapper mapper = new ObjectMapper();
-        AuthResponse authResponse = mapper.readValue(resp.getBody(), AuthResponse.class);
-        logger.info("Fetched new refreshed OAuth token");
-        return authResponse;
+        return false;
     }
 }
