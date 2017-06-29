@@ -40,7 +40,7 @@ public class AuthenticationMgr {
     public boolean authenticate(String username,String accessToken) throws AuthenticationException {
         try {
             if(accessToken != null && !accessToken.isEmpty()){
-                OAuthClientRequest request = new OAuthBearerClientRequest(hostName + "/oauth2/userinfo?schema=openid").
+                OAuthClientRequest request = new OAuthBearerClientRequest(hostName + "/auth/realms/seagrid/protocol/openid-connect/userinfo").
                         buildQueryMessage();
                 URLConnectionClient ucc = new URLConnectionClient();
                 request.setHeader("Authorization","Bearer "+accessToken);
@@ -49,17 +49,12 @@ public class AuthenticationMgr {
                         OAuthResourceResponse.class);
                 ObjectMapper mapper = new ObjectMapper();
                 Map<String,String> profile = mapper.readValue(resp.getBody(), Map.class);
-                String[] userRoles = profile.get("roles").split(",");
-                for(String userRole : userRoles){
-                    for(String allowedRole : allowedUserRoles){
-                        if(username.equals(profile.get("sub")) &&  allowedRole.equals(userRole)){
-                            return true;
-                        }
-                    }
+                if(profile.containsKey("preferred_username") && profile.get("preferred_username").equalsIgnoreCase(username)){
+                    return true;
                 }
             }
         }catch (Exception ex){
-            throw new AuthenticationException(ex);
+            ex.printStackTrace();
         }
         return false;
     }
