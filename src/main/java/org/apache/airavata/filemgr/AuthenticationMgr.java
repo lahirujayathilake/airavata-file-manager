@@ -35,7 +35,6 @@ public class AuthenticationMgr {
     private final static Logger logger = LoggerFactory.getLogger(AuthenticationMgr.class);
 
     String hostName = AiravataFileMgrProperties.getInstance().getIdpUrl();
-    String[] allowedUserRoles = AiravataFileMgrProperties.getInstance().getAuthorisedUserRoles();
 
     public boolean authenticate(String username,String accessToken) throws AuthenticationException {
         try {

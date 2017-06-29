@@ -54,10 +54,6 @@ public class AiravataFileMgrProperties {
         return properties.getProperty(AiravataFileMgrConfig.IDP_URL);
     }
 
-    public String[] getAuthorisedUserRoles() {
-        return properties.getProperty(AiravataFileMgrConfig.IDP_AUTHORISED_ROLES).split(",");
-    }
-
     public String getDataRoot() {
         return properties.getProperty(AiravataFileMgrConfig.USER_DATA_ROOT);
     }
