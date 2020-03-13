@@ -67,12 +67,6 @@ public class AiravataFileMgr {
             }
         });
 
-        sshd.setPublickeyAuthenticator(new PublickeyAuthenticator() {
-            public boolean authenticate(String s, PublicKey publicKey, ServerSession serverSession) {
-                return true;
-            }
-        });
-
         sshd.setSubsystemFactories(Collections.<NamedFactory<Command>>singletonList(new SftpSubsystemFactory()));
         sshd.setCommandFactory(new ScpCommandFactory());
         FileSystemFactory fileSystemFactory = new FileSystemFactory() {
