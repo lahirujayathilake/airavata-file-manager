@@ -61,4 +61,8 @@ public class AiravataFileMgrProperties {
     public int getServerPort() {
         return Integer.parseInt(properties.getProperty(AiravataFileMgrConfig.SFTP_PORT));
     }
+
+    public String getAuthRealm() {
+        return properties.getProperty(AiravataFileMgrConfig.AUTH_REALM);
+    }
 }
