@@ -14,13 +14,10 @@ OAuth authorization server
 2. Modify the filemgr.properties file accordingly. Make sure to specify a free
    port that is also open in the firewall.
 
-3. Modify the userinfo URL path in
-   [AuthenticationMgr.java](https://github.com/SciGaP/airavata-file-manager/blob/master/src/main/java/org/apache/airavata/filemgr/AuthenticationMgr.java#L42)
-
-4. Run `mvn package` to package up the code into a single jar file
+3. Run `mvn package` to package up the code into a single jar file
    (`target/airavata-file-manager-X.Y-SNAPSHOT.jar`).
 
-5. Use the file `scripts/init-script` as an init script for the service.
+4. Use the file `scripts/init-script` as an init script for the service.
    Copy/rename the file into `/etc/init.d/` and modify the variables at the top
    of the script. Then run `service <name of init-script> start` to start the
    service.
