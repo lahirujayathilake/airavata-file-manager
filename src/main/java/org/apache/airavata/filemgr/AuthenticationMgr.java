@@ -40,7 +40,7 @@ public class AuthenticationMgr {
     public boolean authenticate(String username,String accessToken) throws AuthenticationException {
         try {
             if(accessToken != null && !accessToken.isEmpty()){
-                OAuthClientRequest request = new OAuthBearerClientRequest(hostName + "/auth/realms/" + realm + "/protocol/openid-connect/userinfo").
+                OAuthClientRequest request = new OAuthBearerClientRequest(hostName + "/realms/" + realm + "/protocol/openid-connect/userinfo").
                         buildQueryMessage();
                 URLConnectionClient ucc = new URLConnectionClient();
                 request.setHeader("Authorization","Bearer "+accessToken);
